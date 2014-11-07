@@ -60,6 +60,41 @@ namespace glm
 
 	VECTORIZE_VEC(degrees)
 
+	template <typename genType>
+	GLM_FUNC_QUALIFIER genType wrapAngle(genType const & angle)
+	{
+		return abs<genType>(mod<genType>(angle, two_pi<genType>()));
+	}
+
+	VECTORIZE_VEC(wrapAngle)
+
+	template <typename genType>
+	GLM_FUNC_QUALIFIER genType cos_52s(genType const &  x)
+	{
+		genType const xx(x * x);
+		return (genType(0.9999932946) + xx * (genType(-0.4999124376) + xx * (genType(0.0414877472) + xx * genType(-0.0012712095))));
+	}
+
+	VECTORIZE_VEC(cos_52s)
+
+	// cos
+	template <typename genType>
+	GLM_FUNC_QUALIFIER genType cos(genType const & angle)
+	{
+		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'cos' only accept floating-point input");
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		genType const result(wrapAngle<genType>(angle));
+		if (result<half_pi<genType>()) return cos_52s(result);
+		if (result<pi<genType>()) return -cos_52s(pi<genType>() - result);
+		if (result<(genType(3) * half_pi<genType>())) return -cos_52s(angle - pi<genType>());
+		return cos_52s(two_pi<genType>() - result);
+#else
+		return genType(::std::cos(angle));
+#endif
+	}
+
+	VECTORIZE_VEC(cos)
+
 	// sin
 	template <typename genType>
 	GLM_FUNC_QUALIFIER genType sin
@@ -68,22 +103,21 @@ namespace glm
 	)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'sin' only accept floating-point input");
-
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		return cos<genType>(half_pi<genType>() - angle);
+#else
 		return genType(::std::sin(angle));
+#endif
 	}
 
 	VECTORIZE_VEC(sin)
 
-	// cos
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType cos(genType const & angle)
+	GLM_FUNC_QUALIFIER genType tan_56s(genType const &  x)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'cos' only accept floating-point input");
-
-		return genType(::std::cos(angle));
+		genType const xx(x * x);
+		return (x*(genType(-3.16783027) + genType(0.134516124) * xx) / (genType(-4.033321984) + xx));
 	}
-
-	VECTORIZE_VEC(cos)
 
 	// tan
 	template <typename genType>
@@ -93,8 +127,22 @@ namespace glm
 	)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'tan' only accept floating-point input");
-
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		genType const result(wrapAngle<genType>(angle));
+		int const octant(result/quarter_pi<genType>());
+		switch (octant){
+		case 0: return tan_56s(result * four_over_pi<genType>());
+		case 1: return genType(1) / tan_56s((half_pi<genType>() - result) * four_over_pi<genType>());
+		case 2: return genType(-1) / tan_56s((result - half_pi<genType>()) * four_over_pi<genType>());
+		case 3: return -tan_56s((pi<genType>() - result) * four_over_pi<genType>());
+		case 4: return tan_56s((result - pi<genType>()) * four_over_pi<genType>());
+		case 5: return genType(1) / tan_56s((three_over_two_pi<genType>() - result) * four_over_pi<genType>());
+		case 6: return genType(-1) / tan_56s((result - three_over_two_pi<genType>()) * four_over_pi<genType>());
+		case 7: return -tan_56s((two_pi<genType>() - result) * four_over_pi<genType>());
+		}
+#else
 		return genType(::std::tan(angle));
+#endif
 	}
 
 	VECTORIZE_VEC(tan)
@@ -107,8 +155,11 @@ namespace glm
 	)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'asin' only accept floating-point input");
-
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		return atan(x / sqrt(genType(1) - x*x));
+#else
 		return genType(::std::asin(x));
+#endif
 	}
 
 	VECTORIZE_VEC(asin)
@@ -121,8 +172,11 @@ namespace glm
 	)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'acos' only accept floating-point input");
-
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		return half_pi<genType>() - asin(x);
+#else
 		return genType(::std::acos(x));
+#endif
 	}
 
 	VECTORIZE_VEC(acos)
@@ -136,11 +190,22 @@ namespace glm
 	)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'atan' only accept floating-point input");
-
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		genType sgn = sign(y) * sign(x);
+		return abs(atan(y / x)) * sgn;
+#else
 		return genType(::std::atan2(y, x));
+#endif
 	}
 
 	VECTORIZE_VEC_VEC(atan)
+
+	template <typename genType>
+	GLM_FUNC_QUALIFIER genType atan_66s(genType const & x)
+	{
+		genType const xx(x * x);
+		return (x*(genType(1.6867629106) + genType(0.4378497304) * xx) / (genType(1.6867633134) + xx));
+	}
 
 	template <typename genType>
 	GLM_FUNC_QUALIFIER genType atan
@@ -149,8 +214,35 @@ namespace glm
 	)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'atan' only accept floating-point input");
-
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+		genType result = x;
+		bool complement = false;
+		bool region = false;
+		bool sign = false;
+		genType twelfth_pi(0.26179938779914943653855361527329190701643078328126);
+		genType sixth_pi(0.52359877559829887307710723054658381403286156656252);
+		genType tan_twelfth_pi(0.26794919243112270647255365849412763305719474618962);
+		genType tan_sixth_pi(0.57735026918962576450914878050195745564760175127013);
+		if (result < genType(0)) {
+			result = -result;
+			sign = true;  
+		}
+		if (result > genType(1)){
+			result = genType(1) / result;
+			complement = true;
+		}
+		if (result > tan_twelfth_pi) {
+			result = (result - tan_sixth_pi) / (genType(1) + tan_sixth_pi * result);
+			region = true;
+		}
+		result = atan_66s(result);
+		if (region) result += sixth_pi; 
+		if (complement) result = half_pi<genType>() - result;
+		if (sign) result = -result;
+		return result;
+#else
 		return genType(::std::atan(x));
+#endif
 	}
 
 	VECTORIZE_VEC(atan)
