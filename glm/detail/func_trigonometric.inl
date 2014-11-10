@@ -129,18 +129,28 @@ namespace glm
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'tan' only accept floating-point input");
 #ifdef GLM_FORCE_FLOAT_DETERMINISM
-		genType const result(wrapAngle<genType>(angle));
-		int const octant(result/quarter_pi<genType>());
-		switch (octant){
-		case 0: return tan_56s(result * four_over_pi<genType>());
-		case 1: return genType(1) / tan_56s((half_pi<genType>() - result) * four_over_pi<genType>());
-		case 2: return genType(-1) / tan_56s((result - half_pi<genType>()) * four_over_pi<genType>());
-		case 3: return -tan_56s((pi<genType>() - result) * four_over_pi<genType>());
-		case 4: return tan_56s((result - pi<genType>()) * four_over_pi<genType>());
-		case 5: return genType(1) / tan_56s((three_over_two_pi<genType>() - result) * four_over_pi<genType>());
-		case 6: return genType(-1) / tan_56s((result - three_over_two_pi<genType>()) * four_over_pi<genType>());
-		case 7: return -tan_56s((two_pi<genType>() - result) * four_over_pi<genType>());
-		}
+		genType result(wrapAngle<genType>(angle));
+		int const octant(static_cast<int>(result/quarter_pi<genType>()));
+		assert(0 <= octant);
+		assert(octant <= 7);
+		if(0 == octant)
+			return tan_56s(result * four_over_pi<genType>());
+		else if(1 == octant)
+			return genType(1) / tan_56s((half_pi<genType>() - result) * four_over_pi<genType>());
+		else if(2 == octant)
+			return genType(-1) / tan_56s((result - half_pi<genType>()) * four_over_pi<genType>());
+		else if(3 == octant)
+			return -tan_56s((pi<genType>() - result) * four_over_pi<genType>());
+		else if(4 == octant)
+			return tan_56s((result - pi<genType>()) * four_over_pi<genType>());
+		else if(5 == octant)
+			return genType(1) / tan_56s((three_over_two_pi<genType>() - result) * four_over_pi<genType>());
+		else if(6 == octant)
+			return genType(-1) / tan_56s((result - three_over_two_pi<genType>()) * four_over_pi<genType>());
+		else if(7 == octant)
+			return -tan_56s((two_pi<genType>() - result) * four_over_pi<genType>());
+		else
+			return angle;
 #else
 		return genType(::std::tan(angle));
 #endif
