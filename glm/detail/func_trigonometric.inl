@@ -63,7 +63,8 @@ namespace glm
 	template <typename genType>
 	GLM_FUNC_QUALIFIER genType wrapAngle(genType const & angle)
 	{
-		return abs<genType>(mod<genType>(angle, two_pi<genType>()));
+		genType const before_two_pi(nextafterf(two_pi<genType>(), genType(0)));
+		return abs<genType>(mod<genType>(angle, before_two_pi));
 	}
 
 	VECTORIZE_VEC(wrapAngle)
