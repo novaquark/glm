@@ -167,7 +167,9 @@ namespace glm
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'asin' only accept floating-point input");
 #ifdef GLM_FORCE_FLOAT_DETERMINISM
-		return atan(x / sqrt(genType(1) - x*x));
+		float const denum = static_cast<float>((genType(1) - x*x));
+		float const sqrt_denum = _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(denum))); //TODO: use glm::fastInverseSqrt
+		return atan(x / static_cast<genType>(sqrt_denum));
 #else
 		return genType(::std::asin(x));
 #endif
