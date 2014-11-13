@@ -607,9 +607,9 @@
 #		define GLM_ARCH GLM_ARCH_PURE
 #	endif
 #elif(GLM_COMPILER & GLM_COMPILER_VC)
-#	if _M_IX86_FP == 2 && defined(__AVX__)
+#	if (_M_IX86_FP == 2 || defined(_M_X64)) && defined(__AVX__)
 #		define GLM_ARCH (GLM_ARCH_AVX | GLM_ARCH_SSE4 | GLM_ARCH_SSE3 | GLM_ARCH_SSE2)
-#	elif _M_IX86_FP == 2
+#	elif (_M_IX86_FP == 2 || defined(_M_X64))
 #		define GLM_ARCH (GLM_ARCH_SSE2)
 #	else
 #		define GLM_ARCH (GLM_ARCH_PURE)
