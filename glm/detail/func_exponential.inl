@@ -34,6 +34,25 @@
 namespace glm{
 namespace detail
 {
+	GLM_FUNC_QUALIFIER float sqrt(float x)
+	{
+#	ifdef GLM_FORCE_FLOAT_DETERMINISM
+		return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(x)));
+#	else
+		return std::sqrt(x);
+#	endif
+	}
+
+	GLM_FUNC_QUALIFIER double sqrt(double x)
+	{
+#	ifdef GLM_FORCE_FLOAT_DETERMINISM
+		__m128d sse_x = _mm_set_sd(x);
+		return _mm_cvtsd_f64(_mm_sqrt_sd(sse_x, sse_x));
+#	else
+		return std::sqrt(x);
+#	endif
+	}
+
 	template <bool isFloat>
 	struct compute_log2
 	{
@@ -162,7 +181,7 @@ namespace detail
 		{
 			GLM_FUNC_QUALIFIER static detail::tvec1<T, P> call(detail::tvec1<T, P> const & x)
 			{
-				return detail::tvec1<T, P>(std::sqrt(x.x));
+				return detail::tvec1<T, P>(detail::sqrt(x.x));
 			}
 		};
 		
@@ -171,7 +190,7 @@ namespace detail
 		{
 			GLM_FUNC_QUALIFIER static detail::tvec2<T, P> call(detail::tvec2<T, P> const & x)
 			{
-				return detail::tvec2<T, P>(std::sqrt(x.x), std::sqrt(x.y));
+				return detail::tvec2<T, P>(detail::sqrt(x.x), detail::sqrt(x.y));
 			}
 		};
 		
@@ -180,7 +199,7 @@ namespace detail
 		{
 			GLM_FUNC_QUALIFIER static detail::tvec3<T, P> call(detail::tvec3<T, P> const & x)
 			{
-				return detail::tvec3<T, P>(std::sqrt(x.x), std::sqrt(x.y), std::sqrt(x.z));
+				return detail::tvec3<T, P>(detail::sqrt(x.x), detail::sqrt(x.y), detail::sqrt(x.z));
 			}
 		};
 		
@@ -189,7 +208,7 @@ namespace detail
 		{
 			GLM_FUNC_QUALIFIER static detail::tvec4<T, P> call(detail::tvec4<T, P> const & x)
 			{
-				return detail::tvec4<T, P>(std::sqrt(x.x), std::sqrt(x.y), std::sqrt(x.z), std::sqrt(x.w));
+				return detail::tvec4<T, P>(detail::sqrt(x.x), detail::sqrt(x.y), detail::sqrt(x.z), detail::sqrt(x.w));
 			}
 		};
 	}//namespace detail
