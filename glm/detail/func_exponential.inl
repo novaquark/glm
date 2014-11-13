@@ -75,7 +75,7 @@ namespace detail
 	{
 		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & x)
 		{
-			return static_cast<T>(1) / sqrt(x);
+			return static_cast<T>(1) / detail::sqrt(x);
 		}
 	};
 		
@@ -244,12 +244,12 @@ namespace detail
 	// inversesqrt
 	GLM_FUNC_QUALIFIER float inversesqrt(float const & x)
 	{
-		return 1.0f / sqrt(x);
+		return 1.0f / detail::sqrt(x);
 	}
 	
 	GLM_FUNC_QUALIFIER double inversesqrt(double const & x)
 	{
-		return 1.0 / sqrt(x);
+		return 1.0 / detail::sqrt(x);
 	}
 	
 	template <template <class, precision> class vecType, typename T, precision P>
