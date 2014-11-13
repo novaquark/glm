@@ -632,6 +632,12 @@
 #	define GLM_ARCH GLM_ARCH_PURE
 #endif
 
+#ifdef GLM_FORCE_FLOAT_DETERMINISM
+#	if(!(GLM_ARCH & GLM_ARCH_SSE2))
+#		error "SSE2 instructions are required for floating point determinism"
+#	endif
+#endif
+
 // With MinGW-W64, including intrinsic headers before intrin.h will produce some errors. The problem is
 // that windows.h (and maybe other headers) will silently include intrin.h, which of course causes problems.
 // To fix, we just explicitly include intrin.h here.
