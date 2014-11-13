@@ -333,7 +333,7 @@ namespace detail
 		if(k < T(0))
 			return vecType<T, P>(0);
 		else
-			return eta * I - (eta * dotValue + std::sqrt(k)) * N;
+			return eta * I - (eta * dotValue + sqrt(k)) * N;
 	}
 
 }//namespace glm
