@@ -39,6 +39,7 @@
 
 #pragma once
 #include "../common.hpp"
+#include "../exponential.hpp"
 #include "../gtc/constants.hpp"
 
 namespace glm
