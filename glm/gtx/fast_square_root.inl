@@ -42,7 +42,7 @@ namespace glm
 			detail::tvec1<T, P> tmp(detail::compute_inversesqrt<detail::tvec1, double, lowp>::call(detail::tvec1<double, lowp>(x)));
 			return tmp.x;
 #		else
-			return detail::compute_inversesqrt<detail::tvec1, double, lowp>::call(detail::tvec1<double, lowp>(x)).x;
+			return inversesqrt(x);
 #		endif
 	}
 
