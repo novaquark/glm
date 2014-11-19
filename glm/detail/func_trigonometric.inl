@@ -87,7 +87,7 @@ namespace glm
 		genType const result(wrapAngle<genType>(angle));
 		if (result<half_pi<genType>()) return cos_52s(result);
 		if (result<pi<genType>()) return -cos_52s(pi<genType>() - result);
-		if (result<(genType(3) * half_pi<genType>())) return -cos_52s(angle - pi<genType>());
+		if (result<(genType(3) * half_pi<genType>())) return -cos_52s(result - pi<genType>());
 		return cos_52s(two_pi<genType>() - result);
 #else
 		return genType(::std::cos(angle));
