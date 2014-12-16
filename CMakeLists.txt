@@ -1,137 +1,71 @@
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-cmake_policy(VERSION 2.6)
-
+# ---------------------------------------- #
+#                                          #
+#                   glm                    #
+#                                          #
+# ---------------------------------------- #
+cmake_minimum_required(VERSION 2.8)
 project(glm)
-enable_testing()
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-include(GNUInstallDirs)
+# Note:
+#  This cmake file sets a specific GLM configuration
+# -------------------------------------------------------------------------------------------------
 
-add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+# Source files helpers
+# -------------------------------------------------------------------------------------------------
+function(globrecurse_c_cpp_sources result folder)
+	file(GLOB_RECURSE res
+		"${folder}/*.c"
+		"${folder}/*.cpp"
+		"${folder}/*.cxx"
+		"${folder}/*.h"
+		"${folder}/*.hpp"
+		"${folder}/*.hxx"
+		"${folder}/*.inl")
+	set(${result} ${res} PARENT_SCOPE)
+endfunction()
 
-option(GLM_TEST_ENABLE "GLM test" OFF)
-if(NOT GLM_TEST_ENABLE)
-	message(STATUS "GLM is a header only library, no need to build it. Set the option GLM_TEST_ENABLE with ON to build and run the test bench")
+function(group_sources RelDir)
+	get_filename_component(RelDir ${RelDir}/void REALPATH)
+	get_filename_component(RelDir ${RelDir} PATH)
+	foreach(src ${ARGN})
+		set(grname ${src})
+		get_filename_component(grname ${grname} REALPATH)
+		get_filename_component(grname ${grname} PATH)
+		string(REPLACE "${RelDir}/" "" grname "${grname}")
+		string(REPLACE "${RelDir}" "" grname "${grname}")
+		string(REPLACE "/" "\\\\" grname "${grname}")
+		source_group("${grname}" FILES ${src})
+	endforeach()
+endfunction()
+
+# Folders
+# -------------------------------------------------------------------------------------------------
+set(GLM_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
+# Sources
+# -------------------------------------------------------------------------------------------------
+globrecurse_c_cpp_sources(GLM_SRC_FILES ${GLM_ROOT_DIR}/glm)
+group_sources(${GLM_ROOT_DIR}/glm ${GLM_SRC_FILES})
+
+# Target to build
+# -------------------------------------------------------------------------------------------------
+add_library(glm INTERFACE)
+target_include_directories(glm INTERFACE ${GLM_ROOT_DIR})
+target_compile_definitions(glm
+	INTERFACE GLM_FORCE_RADIANS
+	INTERFACE GLM_FORCE_FLOAT_DETERMINISM)
+
+# Per compiler config
+# -------------------------------------------------------------------------------------------------
+if(WIN32)
+	# Enable SSE2
+	target_compile_options(glm INTERFACE "/arch:SSE2")
 endif()
 
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel") AND UNIX))
-	option(GLM_TEST_ENABLE_CXX_98 "Enable C++ 98" OFF)
-	option(GLM_TEST_ENABLE_CXX_0X "Enable C++ 0x" OFF)
-	option(GLM_TEST_ENABLE_CXX_11 "Enable C++ 11" OFF)
-	option(GLM_TEST_ENABLE_CXX_1Y "Enable C++ 1y" OFF)
-	option(GLM_TEST_ENABLE_CXX_PEDANTIC "Pedantic" ON)
+if(MINGW OR COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+	# Enable C++11 if gcc or clang
+	target_compile_options(glm INTERFACE "-std=c++11")
 
-	if(GLM_TEST_ENABLE_CXX_PEDANTIC)
-		add_definitions(-pedantic)
-	endif()
-
-	if(GLM_TEST_ENABLE_CXX_1Y)
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++1y")
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-		set(CMAKE_CXX_FLAGS "-std=c++1y")
-	elseif(GLM_TEST_ENABLE_CXX_11)
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-		set(CMAKE_CXX_FLAGS "-std=c++11")
-	elseif(GLM_TEST_ENABLE_CXX_0X)
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++0x")
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-		set(CMAKE_CXX_FLAGS "-std=c++0x")
-	elseif(GLM_TEST_ENABLE_CXX_98)
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++98")
-		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-		set(CMAKE_CXX_FLAGS "-std=c++98")
-	endif()
+	# Enable SSE2
+	target_compile_options(glm INTERFACE "-msse2")
 endif()
-
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC") OR (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel") AND WIN32))
-	option(GLM_TEST_ENABLE_MS_EXTENSIONS "Enable MS extensions" OFF)
-
-	if(NOT GLM_TEST_ENABLE_MS_EXTENSIONS)
-		add_definitions(/Za)
-	endif()
-endif()
-
-option(GLM_TEST_ENABLE_SIMD_SSE2 "Enable SSE2 optimizations" OFF)
-option(GLM_TEST_ENABLE_SIMD_SSE3 "Enable SSE3 optimizations" OFF)
-option(GLM_TEST_ENABLE_SIMD_AVX "Enable AVX optimizations" OFF)
-option(GLM_TEST_ENABLE_SIMD_AVX2 "Enable AVX2 optimizations" OFF)
-option(GLM_TEST_FORCE_PURE "Force 'pure' instructions" OFF)
-
-if(GLM_TEST_FORCE_PURE)
-	add_definitions(-DGLM_FORCE_PURE)
-
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		add_definitions(-mfpmath=387)
-	elseif(MSVC)
-		add_definitions(/arch:IA32)
-	endif()
-elseif(GLM_TEST_ENABLE_AVX2)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		add_definitions(-mavx2)
-	elseif(GLM_USE_INTEL)
-		add_definitions(/QxAVX2)
-	elseif(MSVC)
-		add_definitions(/arch:AVX2)	
-	endif()
-elseif(GLM_TEST_ENABLE_AVX)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		add_definitions(-mavx)
-	elseif(GLM_USE_INTEL)
-		add_definitions(/QxAVX)
-	elseif(MSVC)
-		add_definitions(/arch:AVX)	
-	endif()
-elseif(GLM_TEST_ENABLE_SSE3)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		add_definitions(-msse3)
-	elseif(GLM_USE_INTEL)
-		add_definitions(/QxSSE3)
-	elseif(MSVC)
-		add_definitions(/arch:SSE2) # VC doesn't support /arch:SSE3	
-	endif()
-elseif(GLM_TEST_ENABLE_SSE2)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		add_definitions(-msse2)
-	elseif(GLM_USE_INTEL)
-		add_definitions(/QxSSE2)
-	elseif(MSVC)
-		if(NOT CMAKE_CL_64)
-			add_definitions(/arch:SSE2)	
-		endif()
-	endif()
-endif()
-
-option(GLM_TEST_ENABLE_FAST_MATH "Enable fast math optimizations" OFF)
-if(GLM_TEST_ENABLE_FAST_MATH)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		add_definitions(-ffast-math)
-	endif()
-
-	if(MSVC)
-		add_definitions(/fp:fast)	
-	endif()
-elseif(NOT GLM_TEST_ENABLE_FAST_MATH)
-	if(MSVC)
-		add_definitions(/fp:precise)	
-	endif()
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-	#add_definitions(-S)
-	#add_definitions(-s)
-	#add_definitions(-m32)
-	#add_definitions(-O3)
-
-	#add_definitions(-fprofile-arcs -ftest-coverage) gcov
-	#ctest_enable_coverage()
-endif()
-
-include_directories("${PROJECT_SOURCE_DIR}")
-include_directories("${PROJECT_SOURCE_DIR}/test/external")
-
-add_subdirectory(glm)
-add_subdirectory(test)
-add_subdirectory(util)
-
-install(DIRECTORY glm DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR})
