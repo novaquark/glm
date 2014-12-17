@@ -58,8 +58,10 @@ target_compile_definitions(glm
 # Per compiler config
 # -------------------------------------------------------------------------------------------------
 if(WIN32)
-	# Enable SSE2
-	target_compile_options(glm INTERFACE "/arch:SSE2")
+	# Enable SSE2 on 32bit (on 64bit there is no x87)
+	if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+		target_compile_options(glm INTERFACE "/arch:SSE2")
+	endif()
 	
 	# Remove a warning about non-conformant nameless structs (still a thing to fix...)
 	target_compile_options(glm INTERFACE "/wd4201")
