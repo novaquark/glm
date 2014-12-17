@@ -60,6 +60,9 @@ target_compile_definitions(glm
 if(WIN32)
 	# Enable SSE2
 	target_compile_options(glm INTERFACE "/arch:SSE2")
+	
+	# Remove a warning about non-conformant nameless structs (still a thing to fix...)
+	target_compile_options(glm INTERFACE "/wd4201")
 endif()
 
 if(MINGW OR COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
