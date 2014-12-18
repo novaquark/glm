@@ -67,7 +67,7 @@ if(WIN32)
 	target_compile_options(glm INTERFACE "/wd4201")
 endif()
 
-if(MINGW OR COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+if(MINGW OR CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	# Enable C++11 if gcc or clang
 	target_compile_options(glm INTERFACE "-std=c++11")
 
