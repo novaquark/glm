@@ -137,7 +137,20 @@ namespace detail
 	}
 
 	// sqrt
-	using std::sqrt;
+#	ifdef GLM_FORCE_FLOAT_DETERMINISM
+		GLM_FUNC_QUALIFIER float sqrt(float x)
+		{
+			return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(x)));
+		}
+		GLM_FUNC_QUALIFIER double sqrt(double x)
+		{
+			__m128d sse_x = _mm_set_sd(x);
+			return _mm_cvtsd_f64(_mm_sqrt_sd(sse_x, sse_x));
+		}
+#	else
+		using std::sqrt;
+#	endif
+
 	template <typename T, precision P, template <typename, precision> class vecType>
 	GLM_FUNC_QUALIFIER vecType<T, P> sqrt(vecType<T, P> const & x)
 	{
