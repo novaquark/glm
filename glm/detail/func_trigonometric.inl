@@ -86,7 +86,13 @@ namespace glm
 		{
 			GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'cos' only accept floating-point input");
 
-			genType const result(wrapAngle<genType>(x));
+			auto wrap_angle = [](genType angle)
+			{
+				genType const before_two_pi(nextafterf(two_pi<genType>(), genType(0)));
+				return abs<genType>(mod<genType>(angle, before_two_pi));
+			};
+
+			genType const result(wrap_angle(x));
 			if (result<half_pi<genType>()) return cos_52s(result);
 			if (result<pi<genType>()) return -cos_52s(pi<genType>() - result);
 			if (result<(genType(3) * half_pi<genType>())) return -cos_52s(result - pi<genType>());
@@ -131,7 +137,13 @@ namespace glm
 		template <typename genType>
 		GLM_FUNC_QUALIFIER genType tan(genType x)
 		{
-			genType result(wrapAngle<genType>(x));
+			auto wrap_angle = [](genType angle)
+			{
+				genType const before_two_pi(nextafterf(two_pi<genType>(), genType(0)));
+				return abs<genType>(mod<genType>(angle, before_two_pi));
+			};
+
+			genType result(wrap_angle(x));
 			int const octant(static_cast<int>(result/quarter_pi<genType>()));
 			assert(0 <= octant);
 			assert(octant <= 7);
