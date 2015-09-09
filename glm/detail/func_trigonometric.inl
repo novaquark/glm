@@ -72,13 +72,6 @@ namespace glm
 
 	// cos
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType wrapAngle(genType const & angle)
-	{
-		genType const before_two_pi(nextafterf(two_pi<genType>(), genType(0)));
-		return abs<genType>(mod<genType>(angle, before_two_pi));
-	}
-
-	template <typename genType>
 	GLM_FUNC_QUALIFIER genType cos_52s(genType const & x)
 	{
 		genType const xx(x * x);
@@ -200,9 +193,9 @@ namespace glm
 			bool complement = false;
 			bool region = false;
 			bool sign = false;
-			genType sixth_pi(0.52359877559829887307710723054658381403286156656252);
-			genType tan_twelfth_pi(0.26794919243112270647255365849412763305719474618962);
-			genType tan_sixth_pi(0.57735026918962576450914878050195745564760175127013);
+			genType sixth_pi = (genType)0.52359877559829887307710723054658381403286156656252;
+			genType tan_twelfth_pi = (genType)0.26794919243112270647255365849412763305719474618962;
+			genType tan_sixth_pi = (genType)0.57735026918962576450914878050195745564760175127013;
 			if (result < genType(0)) {
 				result = -result;
 				sign = true;
