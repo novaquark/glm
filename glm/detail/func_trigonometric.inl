@@ -72,10 +72,14 @@ namespace glm
 
 	// cos
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType cos_52s(genType const & x)
+	GLM_FUNC_QUALIFIER genType cos_quarter(genType const & x)
 	{
 		genType const xx(x * x);
-		return (static_cast<genType>(0.9999932946) + xx * (static_cast<genType>(-0.4999124376) + xx * (static_cast<genType>(0.0414877472) + xx * static_cast<genType>(-0.0012712095))));
+		return genType(1.0)
+			+ xx * (genType(-1.0 / 2.0)
+				+ xx * (genType(1.0 / 24.0)
+					+ xx * (genType(-1.0 / 720.0)
+						+ xx * genType(1.0 / 40320.0))));
 	}
 
 #	if !GLM_FORCE_FLOAT_DETERMINISM
@@ -86,17 +90,11 @@ namespace glm
 		{
 			GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'cos' only accept floating-point input");
 
-			auto wrap_angle = [](genType angle)
-			{
-				genType const before_two_pi(nextafterf(two_pi<genType>(), genType(0)));
-				return abs<genType>(mod<genType>(angle, before_two_pi));
-			};
-
-			genType const result(wrap_angle(x));
-			if (result<half_pi<genType>()) return cos_52s(result);
-			if (result<pi<genType>()) return -cos_52s(pi<genType>() - result);
-			if (result<(genType(3) * half_pi<genType>())) return -cos_52s(result - pi<genType>());
-			return cos_52s(two_pi<genType>() - result);
+			genType const y(mod<genType>(x, two_pi<genType>()));
+			if (y < half_pi<genType>()) return cos_quarter(y);
+			if (y < pi<genType>()) return -cos_quarter(pi<genType>() - y);
+			if (y < (genType(3) * half_pi<genType>())) return -cos_quarter(y - pi<genType>());
+			return cos_quarter(two_pi<genType>() - y);
 		}
 #	endif
 
@@ -137,13 +135,7 @@ namespace glm
 		template <typename genType>
 		GLM_FUNC_QUALIFIER genType tan(genType x)
 		{
-			auto wrap_angle = [](genType angle)
-			{
-				genType const before_two_pi(nextafterf(two_pi<genType>(), genType(0)));
-				return abs<genType>(mod<genType>(angle, before_two_pi));
-			};
-
-			genType result(wrap_angle(x));
+			genType result(mod<genType>(x, two_pi<genType>()));
 			int const octant(static_cast<int>(result/quarter_pi<genType>()));
 			assert(0 <= octant);
 			assert(octant <= 7);
