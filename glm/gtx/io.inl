@@ -203,10 +203,10 @@ namespace io
 					<< std::setprecision(fmt.precision)
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
-					<< std::setw(fmt.width) << a.w << fmt.separator
-					<< std::setw(fmt.width) << a.x << fmt.separator
-					<< std::setw(fmt.width) << a.y << fmt.separator
-					<< std::setw(fmt.width) << a.z
+					<< std::setw(static_cast<int>(fmt.width)) << a.w << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.y << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.z
 					<< fmt.delim_right;
 			}
 			else
@@ -236,7 +236,7 @@ namespace io
                                         << std::setprecision(fmt.precision)
                                         << std::setfill(fmt.space)
                                         << fmt.delim_left
-                                        << std::setw(fmt.width) << a.x
+                                        << std::setw(static_cast<int>(fmt.width)) << a.x
                                         << fmt.delim_right;
                         }
                         else
@@ -266,8 +266,8 @@ namespace io
 					<< std::setprecision(fmt.precision)
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
-					<< std::setw(fmt.width) << a.x << fmt.separator
-					<< std::setw(fmt.width) << a.y
+					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.y
 					<< fmt.delim_right;
 			}
 			else
@@ -297,9 +297,9 @@ namespace io
 					<< std::setprecision(fmt.precision)
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
-					<< std::setw(fmt.width) << a.x << fmt.separator
-					<< std::setw(fmt.width) << a.y << fmt.separator
-					<< std::setw(fmt.width) << a.z
+					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.y << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.z
 					<< fmt.delim_right;
 			}
 			else
@@ -329,10 +329,10 @@ namespace io
 					<< std::setprecision(fmt.precision)
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
-					<< std::setw(fmt.width) << a.x << fmt.separator
-					<< std::setw(fmt.width) << a.y << fmt.separator
-					<< std::setw(fmt.width) << a.z << fmt.separator
-					<< std::setw(fmt.width) << a.w
+					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.y << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.z << fmt.separator
+					<< std::setw(static_cast<int>(fmt.width)) << a.w
 					<< fmt.delim_right;
 			}
 			else
