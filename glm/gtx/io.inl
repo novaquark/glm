@@ -200,7 +200,7 @@ namespace io
 
 				os << std::fixed
 					<< std::right
-					<< std::setprecision(fmt.precision)
+					<< std::setprecision(static_cast<int>(fmt.precision))
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
 					<< std::setw(static_cast<int>(fmt.width)) << a.w << fmt.separator
@@ -233,7 +233,7 @@ namespace io
 
                                 os << std::fixed
                                         << std::right
-                                        << std::setprecision(fmt.precision)
+                                        << std::setprecision(static_cast<int>(fmt.precision))
                                         << std::setfill(fmt.space)
                                         << fmt.delim_left
                                         << std::setw(static_cast<int>(fmt.width)) << a.x
@@ -263,7 +263,7 @@ namespace io
 
 				os << std::fixed
 					<< std::right
-					<< std::setprecision(fmt.precision)
+					<< std::setprecision(static_cast<int>(fmt.precision))
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
 					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
@@ -294,7 +294,7 @@ namespace io
 
 				os << std::fixed
 					<< std::right
-					<< std::setprecision(fmt.precision)
+					<< std::setprecision(static_cast<int>(fmt.precision))
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
 					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
@@ -326,7 +326,7 @@ namespace io
 
 				os << std::fixed
 					<< std::right
-					<< std::setprecision(fmt.precision)
+					<< std::setprecision(static_cast<int>(fmt.precision))
 					<< std::setfill(fmt.space)
 					<< fmt.delim_left
 					<< std::setw(static_cast<int>(fmt.width)) << a.x << fmt.separator
