@@ -642,29 +642,8 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // Has of C++ features
 
-// http://clang.llvm.org/cxx_status.html
-// http://gcc.gnu.org/projects/cxx0x.html
-// http://msdn.microsoft.com/en-us/library/vstudio/hh567368(v=vs.120).aspx
-
-#if GLM_PLATFORM == GLM_PLATFORM_ANDROID || GLM_PLATFORM == GLM_PLATFORM_CYGWIN
-#	define GLM_HAS_CXX11_STL 0
-#elif GLM_COMPILER & (GLM_COMPILER_LLVM | GLM_COMPILER_APPLE_CLANG)
-#	if __has_include(<__config>) // libc++
-#		include <__config>
-//#	else // libstdc++
-//#		include <bits/c++config.h>
-#	endif
-#	if defined(_LIBCPP_VERSION)// || defined(__GLIBCXX__)
-#		define GLM_HAS_CXX11_STL 1
-#	else
-#		define GLM_HAS_CXX11_STL 0
-#	endif
-#else
-#	define GLM_HAS_CXX11_STL ((GLM_LANG & GLM_LANG_CXX0X_FLAG) && \
-		((GLM_COMPILER & GLM_COMPILER_GCC) && (GLM_COMPILER >= GLM_COMPILER_GCC48)) || \
-		((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC2013)) || \
-		((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_COMPILER >= GLM_COMPILER_INTEL15)))
-#endif
+// We consider we always have c++11
+#define GLM_HAS_CXX11_STL 1
 
 // N1720
 #if GLM_COMPILER & (GLM_COMPILER_LLVM | GLM_COMPILER_APPLE_CLANG)
