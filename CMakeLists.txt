@@ -69,7 +69,7 @@ if(MSVC)
 	target_compile_options(glm INTERFACE "/wd4201")
 endif()
 
-if(MINGW OR CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+if(MINGW OR CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
 	# Enable SSE2
 	target_compile_options(glm INTERFACE "-msse2")
 endif()
