@@ -160,20 +160,6 @@ namespace glm
 		}
 #	endif
 
-	// atan
-	template <typename genType>
-	GLM_FUNC_QUALIFIER genType atan(genType const & y, genType const & x)
-	{
-		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'atan' only accept floating-point input");
-
-#		ifdef GLM_FORCE_FLOAT_DETERMINISM
-			genType sgn = sign(y) * sign(x);
-			return abs(atan(y / x)) * sgn;
-#		else
-			return ::std::atan2(y, x);
-#		endif
-	}
-
 	template <typename T, precision P, template <typename, precision> class vecType>
 	GLM_FUNC_QUALIFIER vecType<T, P> atan(vecType<T, P> const & a, vecType<T, P> const & b)
 	{
@@ -219,6 +205,22 @@ namespace glm
 			return result;
 		}
 #	endif
+    
+    // atan
+    template <typename genType>
+    GLM_FUNC_QUALIFIER genType atan(genType const & y, genType const & x)
+    {
+        GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'atan' only accept floating-point input");
+        
+#        ifdef GLM_FORCE_FLOAT_DETERMINISM
+        genType sgn = sign(y) * sign(x);
+        return abs(atan(y / x)) * sgn;
+#        else
+        return ::std::atan2(y, x);
+#        endif
+    }
+    
+
 
 	template <typename T, precision P, template <typename, precision> class vecType>
 	GLM_FUNC_QUALIFIER vecType<T, P> atan(vecType<T, P> const & v)
