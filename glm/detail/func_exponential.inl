@@ -35,6 +35,7 @@
 #include <limits>
 #include <cmath>
 #include <cassert>
+#include <immintrin.h>
 
 namespace glm{
 namespace detail
